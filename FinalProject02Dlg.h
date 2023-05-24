@@ -3,6 +3,9 @@
 //
 
 #pragma once
+#include "opencv2/opencv.hpp"
+using namespace cv;
+using namespace std;
 
 
 // CFinalProject02Dlg 대화 상자
@@ -31,4 +34,11 @@ protected:
 	afx_msg void OnPaint();
 	afx_msg HCURSOR OnQueryDragIcon();
 	DECLARE_MESSAGE_MAP()
+
+public:
+	afx_msg void OnBnClickedButton1();
+	Mat m_matImage; // 이미지 정보를 담고 있는 객체
+	BITMAPINFO* m_pBitmapInfo; // Bitmap 정보를 담고 있는 구조체
+	void CreateBitmapInfo(int w, int h, int bpp);
+	afx_msg void OnDestroy();
 };

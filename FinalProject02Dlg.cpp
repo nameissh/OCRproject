@@ -65,6 +65,8 @@ BEGIN_MESSAGE_MAP(CFinalProject02Dlg, CDialogEx)
 	ON_WM_SYSCOMMAND()
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
+	ON_BN_CLICKED(IDC_BUTTON1, &CFinalProject02Dlg::OnBnClickedButton1)
+	ON_WM_DESTROY()
 END_MESSAGE_MAP()
 
 
@@ -153,3 +155,95 @@ HCURSOR CFinalProject02Dlg::OnQueryDragIcon()
 	return static_cast<HCURSOR>(m_hIcon);
 }
 
+
+
+void CFinalProject02Dlg::OnBnClickedButton1()		// open file
+{
+	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
+
+	TCHAR szFilter[] = _T("Image(*.png, *.gif, *.jpg)|*.png;*.gif;*.jpg|All Files(*.*)|*.*||");
+	CFileDialog dlg(TRUE, NULL, NULL, OFN_HIDEREADONLY, szFilter);
+
+	if (IDOK == dlg.DoModal())
+	{
+		// 선택 파일정보 얻기
+		// strPathName      "C:/Images/Picture1.jpg"
+		// strFileName      "Picture1.jpg"
+		// strFolderPath    "C:/Images"
+
+		CString strPathName = dlg.GetPathName();
+		CString strFileName = dlg.GetFileName();
+		CString strFolderPath = dlg.GetFolderPath();
+		//SetDlgItemText(IDC_EDIT1, strPathName);
+
+		// Bitmap 정보를 생성하는 함수 호출
+		CT2CA pszString(strPathName);
+		string strPath(pszString);
+
+		m_matImage = imread(strPath, IMREAD_UNCHANGED);
+
+		CreateBitmapInfo(m_matImage.cols, m_matImage.rows, m_matImage.channels() * 8);
+
+		// 파일 picture control에 띄우기
+		CClientDC dc(GetDlgItem(IDC_picture));
+
+		CRect rect;
+		GetDlgItem(IDC_picture)->GetClientRect(&rect);
+
+		SetStretchBltMode(dc.GetSafeHdc(), COLORONCOLOR);
+		StretchDIBits(dc.GetSafeHdc(), 0, 0, rect.Width(), rect.Height(), 0, 0, m_matImage.cols, m_matImage.rows, m_matImage.data, m_pBitmapInfo, DIB_RGB_COLORS, SRCCOPY);
+	}
+}
+
+
+
+void CFinalProject02Dlg::CreateBitmapInfo(int w, int h, int bpp)
+{
+	if (m_pBitmapInfo != NULL)
+	{
+		delete m_pBitmapInfo;
+		m_pBitmapInfo = NULL;
+	}
+
+	if (bpp == 8)
+		m_pBitmapInfo = (BITMAPINFO*) new BYTE[sizeof(BITMAPINFO) + 255 * sizeof(RGBQUAD)];
+	else // 24 or 32bit
+		m_pBitmapInfo = (BITMAPINFO*) new BYTE[sizeof(BITMAPINFO)];
+
+	m_pBitmapInfo->bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
+	m_pBitmapInfo->bmiHeader.biPlanes = 1;
+	m_pBitmapInfo->bmiHeader.biBitCount = bpp;
+	m_pBitmapInfo->bmiHeader.biCompression = BI_RGB;
+	m_pBitmapInfo->bmiHeader.biSizeImage = 0;
+	m_pBitmapInfo->bmiHeader.biXPelsPerMeter = 0;
+	m_pBitmapInfo->bmiHeader.biYPelsPerMeter = 0;
+	m_pBitmapInfo->bmiHeader.biClrUsed = 0;
+	m_pBitmapInfo->bmiHeader.biClrImportant = 0;
+
+	if (bpp == 8)
+	{
+		for (int i = 0; i < 256; i++)
+		{
+			m_pBitmapInfo->bmiColors[i].rgbBlue = (BYTE)i;
+			m_pBitmapInfo->bmiColors[i].rgbGreen = (BYTE)i;
+			m_pBitmapInfo->bmiColors[i].rgbRed = (BYTE)i;
+			m_pBitmapInfo->bmiColors[i].rgbReserved = 0;
+		}
+	}
+
+	m_pBitmapInfo->bmiHeader.biWidth = w;
+	m_pBitmapInfo->bmiHeader.biHeight = -h;
+}
+
+
+void CFinalProject02Dlg::OnDestroy()
+{
+	CDialogEx::OnDestroy();
+
+	// TODO: 여기에 메시지 처리기 코드를 추가합니다.
+	if (m_pBitmapInfo != NULL)
+	{
+		delete m_pBitmapInfo;
+		m_pBitmapInfo = NULL;
+	}
+}
