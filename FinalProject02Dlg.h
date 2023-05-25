@@ -3,7 +3,16 @@
 //
 
 #pragma once
+
+#define _CRT_SECURE_NO_WARNINGS
+#define NOMINMAX
+
 #include "opencv2/opencv.hpp"
+#include <windows.h>
+#include <iostream>
+#include <leptonica/allheaders.h>
+#include <tesseract/baseapi.h>
+
 using namespace cv;
 using namespace std;
 
@@ -45,6 +54,4 @@ public:
 	Mat m_src;
 	Mat m_gaus;
 	Mat m_bin;
-	Mat m_edge;
-	Mat m_morp;
 };

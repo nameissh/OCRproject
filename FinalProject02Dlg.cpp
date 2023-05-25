@@ -274,4 +274,9 @@ void CFinalProject02Dlg::OnBnClickedButton2()		// image preprocessing
 
 	SetStretchBltMode(dc.GetSafeHdc(), COLORONCOLOR);
 	StretchDIBits(dc.GetSafeHdc(), 0, 0, rect.Width(), rect.Height(), 0, 0, m_bin.cols, m_bin.rows, m_bin.data, m_pBitmapInfo, DIB_RGB_COLORS, SRCCOPY);
+
+	// FinalProject02 폴더에 파일 저장
+	CString savePath = _T("C:/c++/FinalProject02/text.bmp");
+	string savePathStr(CW2A(savePath.GetString()));
+	imwrite(savePathStr, m_bin);
 }
