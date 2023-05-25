@@ -41,4 +41,10 @@ public:
 	BITMAPINFO* m_pBitmapInfo; // Bitmap 정보를 담고 있는 구조체
 	void CreateBitmapInfo(int w, int h, int bpp);
 	afx_msg void OnDestroy();
+	afx_msg void OnBnClickedButton2();
+	Mat m_src;
+	Mat m_gaus;
+	Mat m_bin;
+	Mat m_edge;
+	Mat m_morp;
 };

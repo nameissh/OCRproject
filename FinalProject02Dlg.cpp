@@ -67,6 +67,7 @@ BEGIN_MESSAGE_MAP(CFinalProject02Dlg, CDialogEx)
 	ON_WM_QUERYDRAGICON()
 	ON_BN_CLICKED(IDC_BUTTON1, &CFinalProject02Dlg::OnBnClickedButton1)
 	ON_WM_DESTROY()
+	ON_BN_CLICKED(IDC_BUTTON2, &CFinalProject02Dlg::OnBnClickedButton2)
 END_MESSAGE_MAP()
 
 
@@ -236,6 +237,7 @@ void CFinalProject02Dlg::CreateBitmapInfo(int w, int h, int bpp)
 }
 
 
+
 void CFinalProject02Dlg::OnDestroy()
 {
 	CDialogEx::OnDestroy();
@@ -246,4 +248,30 @@ void CFinalProject02Dlg::OnDestroy()
 		delete m_pBitmapInfo;
 		m_pBitmapInfo = NULL;
 	}
+}
+
+
+
+void CFinalProject02Dlg::OnBnClickedButton2()		// image preprocessing
+{
+	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
+
+	// 가우시안 필터
+	cvtColor(m_matImage, m_src, COLOR_RGB2GRAY);
+	GaussianBlur(m_src, m_gaus, Size(3, 3), 0);
+
+	// 이진화
+	threshold(m_gaus, m_bin, 0, 255, THRESH_BINARY | THRESH_OTSU);
+
+	// Bitmap 정보를 생성하는 함수 호출
+	CreateBitmapInfo(m_bin.cols, m_bin.rows, m_bin.channels() * 8);
+
+	// 파일 picture control에 띄우기
+	CClientDC dc(GetDlgItem(IDC_picture));
+
+	CRect rect;
+	GetDlgItem(IDC_picture)->GetClientRect(&rect);
+
+	SetStretchBltMode(dc.GetSafeHdc(), COLORONCOLOR);
+	StretchDIBits(dc.GetSafeHdc(), 0, 0, rect.Width(), rect.Height(), 0, 0, m_bin.cols, m_bin.rows, m_bin.data, m_pBitmapInfo, DIB_RGB_COLORS, SRCCOPY);
 }
