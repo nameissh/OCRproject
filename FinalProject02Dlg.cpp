@@ -68,6 +68,7 @@ BEGIN_MESSAGE_MAP(CFinalProject02Dlg, CDialogEx)
 	ON_BN_CLICKED(IDC_BUTTON1, &CFinalProject02Dlg::OnBnClickedButton1)
 	ON_WM_DESTROY()
 	ON_BN_CLICKED(IDC_BUTTON2, &CFinalProject02Dlg::OnBnClickedButton2)
+	ON_BN_CLICKED(IDC_BUTTON3, &CFinalProject02Dlg::OnBnClickedButton3)
 END_MESSAGE_MAP()
 
 
@@ -277,6 +278,33 @@ void CFinalProject02Dlg::OnBnClickedButton2()		// image preprocessing
 
 	// FinalProject02 폴더에 파일 저장
 	CString savePath = _T("C:/c++/FinalProject02/text.bmp");
-	string savePathStr(CW2A(savePath.GetString()));
+	string savePathStr(CW2A(savePath.GetString()));		// 유니코드 멀티바이트 변환 : CW2A
 	imwrite(savePathStr, m_bin);
+}
+
+
+
+void CFinalProject02Dlg::OnBnClickedButton3()		// text
+{
+	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
+
+	const char* input_image = "C:/c++/FinalProject02/text.bmp";
+	const char* dataPath = "C:/Program Files/Tesseract-OCR/tessdata";
+
+	// tesseract api 설정
+	tesseract::TessBaseAPI* api = new tesseract::TessBaseAPI();
+
+	if (api->Init(dataPath, "eng+kor"))
+	{
+		return;
+	}
+
+	// 이미지 설정
+	Pix* image = pixRead(input_image);
+	api->SetImage(image);
+
+	string utf_text = api->GetUTF8Text();
+	CString text(utf_text.c_str());
+
+	SetDlgItemText(IDC_EDIT1, text);
 }

@@ -54,4 +54,5 @@ public:
 	Mat m_src;
 	Mat m_gaus;
 	Mat m_bin;
+	afx_msg void OnBnClickedButton3();
 };
